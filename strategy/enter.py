@@ -4,11 +4,13 @@ import talib as tl
 import pandas as pd
 import notify
 import logging
+import datetime
 
 
 # TODO 真实波动幅度（ATR）放大
 # 最后一个交易日收市价为指定区间内最高价
 def check_max_price(stock, data, end_date=None, threshold=60):
+    print("%s check max price" %stock)
     max_price = 0
     data = data.loc[:end_date]
     data = data.tail(n=threshold)
@@ -52,10 +54,11 @@ def check_breakthrough(stock, data, end_date=None, threshold=60):
 
 # 均线突破
 def check_ma(stock, data, end_date=None, ma_days=250):
-    if data.size < ma_days:
+    print("%s check ma" %stock)
+    if len(data.index) < ma_days:
         logging.info("{0}:样本小于{1}天...\n".format(stock, ma_days))
         return False
-
+    print("dat size %d" %data.size)
     data['ma'] = pd.Series(tl.MA(data['close'].values, ma_days), index=data.index.values)
 
     begin_date = data.iloc[0].name
@@ -74,33 +77,38 @@ def check_ma(stock, data, end_date=None, ma_days=250):
 
 
 # 量比大于3.0
-def check_volume(code_name, data, end_date=None, threshold=60):
+def check_volume(code_name, data, end_date=None, threshold=40):
     stock = code_name[0]
     name = code_name[1]
     total_vol = 0
-    data = data.loc[:end_date]
-    data = data.tail(n=threshold+1)
-    if data.size < threshold + 1:
+    
+    if len(data.index) < threshold + 1:
         logging.info("{0}:样本小于{1}天...\n".format(stock, threshold))
         return False
 
     # 最后一天收盘价
     last_close = data.iloc[-1]['close']
     # 最后一天成交量
-    last_vol = data.iloc[-1]['volume']
+    last_vol = data.iloc[-1]['vol']
 
-    data = data.head(n=threshold)
+    last_change = data.iloc[-1]['change']
+    
+    if(last_change < 0):
+        return False
 
     for index, row in data.iterrows():
-        total_vol += float(row['volume'])
+        total_vol += float(row['vol'])
+        if(row['vol'] > last_vol):
+            return False
 
-    mean_vol = total_vol / threshold
+    mean_vol = total_vol / len(data.index)
     vol_ratio = last_vol / mean_vol
     if vol_ratio >= 3:
 
-        msg = "*{0}({1}) 量比：{2:.2f}\n\t收盘价：{3}\n".format(name, stock, vol_ratio, last_close)
+        msg = "*{0}({1})".format(name, stock)
         logging.info(msg)
-        notify.notify(msg)
+        today = datetime.date.today().strftime('%Y%m%d')
+        notify.notify(today+"-stock result",msg)
         return True
     else:
         return False
