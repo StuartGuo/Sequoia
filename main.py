@@ -13,8 +13,8 @@ import datetime
 
 
 logging.basicConfig(format='%(asctime)s %(message)s', filename='sequoia.log', level=logging.DEBUG)
-UPDATE_TIME="17:40"
-EXEC_TIME="18:30"
+UPDATE_TIME="16:00"
+EXEC_TIME="19:00"
 ALL_PATH='config/Astock.xlsx'
 
     

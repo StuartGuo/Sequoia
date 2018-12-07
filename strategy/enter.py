@@ -76,7 +76,6 @@ def check_ma(stock, data, end_date=None, ma_days=250):
         return False
 
 
-# 量比大于3.0
 def check_volume(code_name, data, end_date=None, threshold=40):
     stock = code_name[0]
     name = code_name[1]
@@ -86,25 +85,33 @@ def check_volume(code_name, data, end_date=None, threshold=40):
         logging.info("{0}:样本小于{1}天...\n".format(stock, threshold))
         return False
 
-    # 最后一天收盘价
     last_close = data.iloc[-1]['close']
-    # 最后一天成交量
-    last_vol = data.iloc[-1]['vol']
+    last_open = data.iloc[-1]['open']
+    last_high = data.iloc[-1]['high']
+ #（收盘价-开盘价）/（最高价-收盘价）>2   
+    wr=(last_close-last_open)/(last_high-last_close)
+    if(wr<2):
+        return False
 
+    last_vol = data.iloc[-1]['vol']
     last_change = data.iloc[-1]['change']
-    
+#当天上涨    
     if(last_change < 0):
         return False
 
     for index, row in data.iterrows():
         total_vol += float(row['vol'])
+#成交量为60日最高
         if(row['vol'] > last_vol):
+            return False
+#最高价为60日最高
+        if(row['high'] > last_high):
             return False
 
     mean_vol = total_vol / len(data.index)
     vol_ratio = last_vol / mean_vol
+#成交量为60日平均成交量3倍以上
     if vol_ratio >= 3:
-
         msg = "*{0}({1})".format(name, stock)
         logging.info(msg)
         today = datetime.date.today().strftime('%Y%m%d')
