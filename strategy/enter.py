@@ -89,9 +89,10 @@ def check_volume(code_name, data, end_date=None, threshold=40):
     last_open = data.iloc[-1]['open']
     last_high = data.iloc[-1]['high']
  #（收盘价-开盘价）/（最高价-收盘价）>2   
-    wr=(last_close-last_open)/(last_high-last_close)
-    if(wr<2):
-        return False
+    if(last_high!=last_close):
+        wr=(last_close-last_open)/(last_high-last_close)
+        if(wr<2):
+            return False
 
     last_vol = data.iloc[-1]['vol']
     last_change = data.iloc[-1]['change']
