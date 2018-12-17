@@ -75,6 +75,23 @@ def check_ma(stock, data, end_date=None, ma_days=250):
     else:
         return False
 
+def check_cross(code_name,data):
+    stock = code_name[0]
+    name = code_name[1]
+
+    last_close = data.iloc[-1]['close']
+    last_open = data.iloc[-1]['open']
+    last_high = data.iloc[-1]['high']
+    last_low  = data.iloc[-1]['low']
+
+    if (last_open==last_close)and(last_high>last_open)and(last_low<last_close):
+        msg = "*{0}({1})".format(name, stock)
+        logging.info(msg)
+        today = datetime.date.today().strftime('%Y%m%d')
+        notify.notify(today+"-stock result cross",msg)
+        return True
+    return False
+
 
 def check_volume(code_name, data, end_date=None, threshold=40):
     stock = code_name[0]
@@ -125,7 +142,7 @@ def check_volume(code_name, data, end_date=None, threshold=40):
         msg = "*{0}({1})".format(name, stock)
         logging.info(msg)
         today = datetime.date.today().strftime('%Y%m%d')
-        notify.notify(today+"-stock result",msg)
+        notify.notify(today+"-stock result volume",msg)
         return True
     else:
         return False
