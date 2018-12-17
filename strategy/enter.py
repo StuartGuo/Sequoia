@@ -116,7 +116,7 @@ def check_volume(code_name, data, end_date=None, threshold=40):
 #相对最低点的涨幅不超过30%
     max_change = (last_high-min_low)/min_low
     if(max_change > 0.3):
-        return Flase
+        return False
 #成交量为60日平均成交量3倍以上
     mean_vol = total_vol / len(data.index)
     vol_ratio = last_vol / mean_vol
