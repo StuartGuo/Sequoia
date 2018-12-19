@@ -85,12 +85,20 @@ def check_cross(code_name,data):
     last_low  = data.iloc[-1]['low']
 
     if (last_open==last_close)and(last_high>last_open)and(last_low<last_close):
+        for index, row in data.iterrows():
+            total_wave += float(row['high'])-float(row['low'])
+        mean_wave = total_wave / len(data.index)
+
+        if (last_high-last_low) < mean_wave:
+            return False
+
         msg = "*{0}({1})".format(name, stock)
         logging.info(msg)
         today = datetime.date.today().strftime('%Y%m%d')
         notify.notify(today+"-stock result cross",msg)
         return True
-    return False
+    else:  
+        return False
 
 
 def check_volume(code_name, data, end_date=None, threshold=40):

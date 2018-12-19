@@ -25,9 +25,8 @@ def strategy(end_date=None):
         data = utils.read_data(stock, name)
         if data is None:
             return False
-        return \
-            enter.check_volume(code_name, data, end_date=end_date) \
-            and enter.check_cross(code_name, data)
+        enter.check_cross(code_name, data)
+        return enter.check_volume(code_name, data, end_date=end_date)
     # low_atr.check_low_increase(stock, data)
     return end_date_filter
 
