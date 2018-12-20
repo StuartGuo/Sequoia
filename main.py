@@ -124,7 +124,6 @@ def dailyjob2updateall():
 
     print("Successfully get stock info!Enter sleep!")
 
-dailyjob()
 #schedule.every().saturday.at("09:15").do(weeklyjob)
 schedule.every().day.at(UPDATE_TIME).do(dailyjob2updateall)
 schedule.every().day.at(EXEC_TIME).do(dailyjob)
