@@ -78,6 +78,7 @@ def check_ma(stock, data, end_date=None, ma_days=250):
 def check_cross(code_name,data):
     stock = code_name[0]
     name = code_name[1]
+    total_wave=0
 
     last_close = data.iloc[-1]['close']
     last_open = data.iloc[-1]['open']
